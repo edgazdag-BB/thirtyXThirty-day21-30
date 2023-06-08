@@ -1,36 +1,38 @@
 import { createReducer, on } from "@ngrx/store";
 import { Contact } from "src/app/models/contact";
 import { 
-  loadAllContactsSuccess, saveContactSuccess, deleteContactSuccess, 
+  addContactSuccess,
+  deleteContactSuccess,
+  loadContactsSuccess, 
+  updateContactSuccess, 
 } from "./contacts.actions";
+import { EntityAdapter, EntityState, createEntityAdapter } from "@ngrx/entity";
 
-export interface ContactsState {
-  currentContact?: Contact;
-  contacts: Contact[];
+export interface ContactsState extends EntityState<Contact>{
+  selectedContactId: number | null
 }
 
-export const initialContactsState: ContactsState = {
-  currentContact: undefined,
-  contacts: [],
-};
+export const contactAdapter: EntityAdapter<Contact> = createEntityAdapter<Contact>();
+
+export const initialContactsState: ContactsState =  contactAdapter.getInitialState({
+  ids: [],
+  entities: {},
+  selectedContactId: null
+});
 
 export const contactsReducer = createReducer<ContactsState>(
   initialContactsState,
-  on(loadAllContactsSuccess, (state, { contacts }) => ({ ...state, contacts })),
-  on(saveContactSuccess, (state: ContactsState, { contact }) => ({
-    ...state,
-    contacts: contact.id === 0 ? 
-    [...state.contacts, contact] :
-      state.contacts.map((c) => c.id === contact.id ? contact : c),
-    currentContact: state.currentContact
-  })),
-  on(deleteContactSuccess, (state: ContactsState, { contact }) => ({
-    ...state,
-    currentContact: state.currentContact
-      ? state.currentContact.id === contact.id
-        ? undefined
-        : state.currentContact
-      : undefined,
-    contacts: state.contacts.filter((c) => c.id !== contact.id)
-  }))
+  on(loadContactsSuccess, (state, { contacts }) => contactAdapter.setAll(contacts, state)),
+  on(addContactSuccess, (state, { contact }) => contactAdapter.addOne(contact, state)),
+  on(updateContactSuccess, (state, { contact }) => contactAdapter.upsertOne(contact, state)),
+  on(deleteContactSuccess, (state, { id }) => contactAdapter.removeOne(id, state))
 );
+
+export const getSelectedUserId = (state: ContactsState) => state.selectedContactId;
+
+export const {
+  selectIds,
+  selectEntities,
+  selectAll,
+  selectTotal
+} = contactAdapter.getSelectors();

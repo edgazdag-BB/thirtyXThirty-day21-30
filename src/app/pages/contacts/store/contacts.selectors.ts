@@ -1,15 +1,25 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
-import { ContactsState } from "./contacts.state";
+import { ContactsState, getSelectedUserId, selectAll, selectEntities } from "./contacts.state";
 
 
 export const contactsFeatureSelector = createFeatureSelector<ContactsState>('contacts');
 
-export const selectCurrentContact = createSelector(
+export const selectContactId = createSelector(
   contactsFeatureSelector,
-  (state: ContactsState) => state.currentContact
+  getSelectedUserId
 );
 
+export const selectAllContactEntities = createSelector(
+  contactsFeatureSelector,
+  selectEntities
+)
 export const selectAllContacts = createSelector(
   contactsFeatureSelector,
-  (state: ContactsState) => state.contacts
+  selectAll
+);
+
+export const selectCurrentContact = createSelector(
+  selectAllContactEntities,
+  selectContactId,
+  (contacts, contactId) => contactId && contacts[contactId]
 );

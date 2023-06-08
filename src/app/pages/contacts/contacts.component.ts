@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { selectAllContacts } from './store/contacts.selectors';
-import { deleteContact, loadAllContacts, addEditContact } from './store/contacts.actions';
+import { contactDetailNav, deleteContact, loadContacts } from './store/contacts.actions';
 import { Contact } from 'src/app/models/contact';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-contacts',
@@ -16,30 +17,18 @@ export class ContactsComponent implements OnInit {
   constructor(private store: Store) { }
 
   ngOnInit(): void {
-    this.store.dispatch(loadAllContacts());
+    this.store.dispatch(loadContacts());
   }
 
   updateContact(contact: Contact) {
-    this.store.dispatch(addEditContact({contact}));
+    this.store.dispatch(contactDetailNav({contact}));
   }
 
   addContact() {
-    let contact: Contact = {
-      id: 0,
-      name: '',
-      email: '',
-      phone: '',
-      phoneType: '',
-      address: '',
-      city: '',
-      state: '',
-      zip: ''
-    }
-
-    this.store.dispatch(addEditContact({contact}));
+    this.store.dispatch(contactDetailNav({}));
   }
 
-  deleteContact(contact: Contact) {
-    this.store.dispatch(deleteContact({contact}));
+  deleteContact(id: string) {
+   this.store.dispatch(deleteContact({id}));
   }
 }

@@ -10,11 +10,11 @@ export class ContactsListComponent {
   @Input() contacts!: Contact[];
   @Input() displayedColumns!: string[];
   @Output() updateContact: EventEmitter<Contact> = new EventEmitter<Contact>();
-  @Output() deleteContact: EventEmitter<Contact> = new EventEmitter<Contact>();
+  @Output() deleteContact: EventEmitter<string> = new EventEmitter<string>();
   @Output() addContact: EventEmitter<Contact> = new EventEmitter<Contact>()
 
-  delete(event: any, contact: Contact) {
+  delete(event: any, id: string) {
     event.stopPropagation();
-    this.deleteContact.emit(contact);
+    this.deleteContact.emit(id);
   }
 }

@@ -28,7 +28,7 @@
   <ng-container matColumnDef="delete">
     <th mat-header-cell *matHeaderCellDef>Delete</th>
     <td mat-cell *matCellDef="let contact;">
-      <button mat-stroked-button color="warn" (click)="delete($event, contact)">
+      <button mat-stroked-button color="warn" (click)="delete($event, contact.id)">
         <mat-icon>clear</mat-icon>
       </button>
     </td>

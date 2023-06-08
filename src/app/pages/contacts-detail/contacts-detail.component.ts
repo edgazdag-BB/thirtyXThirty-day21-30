@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Contact } from 'src/app/models/contact';
-import { saveContact } from '../contacts/store/contacts.actions';
+import { addContact, updateContact } from '../contacts/store/contacts.actions';
+import { Update } from '@ngrx/entity';
+//import { saveContact } from '../contacts/store/contacts.actions';
 
 @Component({
   selector: 'app-contacts-detail',
@@ -32,10 +34,11 @@ export class ContactsDetailComponent implements OnInit {
 
   saveContact(form: FormGroup) {
     const contact = this.contactForm.value as Contact;
-
-    //contact.id === null ? contact.id = 0 : contact.id;
     
-    this.store.dispatch(saveContact({contact}));
+    contact.id === 0 ? 
+      this.store.dispatch(addContact({contact})) : 
+      this.store.dispatch(updateContact({contact}))
+    
     history.back();
   }
 }

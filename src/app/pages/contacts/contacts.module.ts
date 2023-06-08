@@ -1,8 +1,8 @@
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { NgModule } from '@angular/core';
-import { ContactsEffects } from './store/contacts.effects';
 import { contactsReducer } from './store/contacts.state';
+import { ContactsEffects } from './store/contacts.effects';
  
 @NgModule({
   imports: [

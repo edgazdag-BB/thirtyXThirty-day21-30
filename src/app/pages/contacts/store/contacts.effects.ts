@@ -2,11 +2,16 @@ import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { ContactsService } from "src/app/services/contacts.service";
 import { 
-  loadAllContacts, loadAllContactsSuccess, loadAllContactsFailure, 
-  addEditContact, saveContact, saveContactSuccess, saveContactFailure,
-  deleteContact, deleteContactSuccess, deleteContactFailure  
+  addContact,
+  addContactFailure,
+  addContactSuccess,
+  contactDetailNav,
+  deleteContact,
+  deleteContactFailure,
+  deleteContactSuccess,
+  loadContacts, loadContactsFailure, loadContactsSuccess, updateContact, updateContactSuccess 
 } from "./contacts.actions";
-import { catchError, map, of, switchMap } from "rxjs";
+import { catchError, concatMap, exhaustMap, map, of, switchMap, tap } from "rxjs";
 import { Router } from "@angular/router";
 
 @Injectable()
@@ -18,39 +23,45 @@ export class ContactsEffects {
     private router: Router
   ) {}
 
-  loadAllContacts$ = createEffect(() => 
+  loadContacts$ = createEffect(() => 
     this.actions$.pipe(
-      ofType(loadAllContacts),
+      ofType(loadContacts),
       switchMap(() => 
         this.contactService.getAllContacts().pipe(
-          map((contacts) => loadAllContactsSuccess({contacts})),
-          catchError((error) =>  of(loadAllContactsFailure({ error })))
+          map((contacts) => loadContactsSuccess({contacts})),
+          catchError((error) =>  of(loadContactsFailure({ error })))
         )
       )
     )
   );
 
-  addEditContact$ = createEffect(() => 
+  addContactNav$ = createEffect(() => 
     this.actions$.pipe(
-      ofType(addEditContact),
+      ofType(contactDetailNav),
       switchMap(({contact}) => this.router.navigateByUrl('app/contact-detail', {state: contact}))
     ),
     { dispatch: false }
   );
 
-  saveContact$ = createEffect(() => 
+  addContact$ = createEffect(() => 
     this.actions$.pipe(
-      ofType(saveContact),
-      switchMap((action) =>
-          action.contact.id === 0 ?
-          this.contactService.createContact(action.contact).pipe(
-            map((contact) => saveContactSuccess({contact: contact})),
-            catchError((error) => of(saveContactFailure({error})))
-          ) :
-          this.contactService.updateContact(action.contact).pipe(
-            map((contact) => saveContactSuccess({contact: contact})),
-            catchError((error) => of(saveContactFailure({error})))
-          )
+      ofType(addContact),
+      concatMap((action) =>
+        this.contactService.createContact(action.contact).pipe(
+          map((contact) => addContactSuccess({contact: contact})),
+          catchError((error) => of(addContactFailure({error})))
+        )
+      )
+    )
+  );
+
+  updateContact$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(updateContact),
+      concatMap((action) => 
+        this.contactService.updateContact(action.contact).pipe(
+          map((contact) => updateContactSuccess({contact: contact}))
+        ) 
       )
     )
   );
@@ -58,9 +69,9 @@ export class ContactsEffects {
   deleteContact$ = createEffect(() =>
     this.actions$.pipe(
       ofType(deleteContact), 
-      switchMap((action) =>
-        this.contactService.deleteContact(action.contact.id ? action.contact.id : 0).pipe(
-          map(() => deleteContactSuccess({contact: action.contact})),
+      exhaustMap((action) =>
+        this.contactService.deleteContact(action.id).pipe(
+          map((id) => deleteContactSuccess({id})),
           catchError((error) => of(deleteContactFailure({error})))
         ) 
       )

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Contact } from '../models/contact';
 import { Observable } from 'rxjs';
+import { Update } from '@ngrx/entity';
 
 @Injectable({
   providedIn: 'root',
@@ -19,11 +20,11 @@ export class ContactsService {
     return this.http.post<Contact>(`${this.API_URL}contacts/`, contact);
   }
 
-  updateContact(contact: Partial<Contact>): Observable<Contact> {
+  updateContact(contact: Contact): Observable<Contact> {
     return this.http.put<Contact>(`${this.API_URL}contacts/${contact.id}`, contact);
   }
 
-  deleteContact(id: number) {
-    return this.http.delete<Contact>(`${this.API_URL}contacts/${id}`);
+  deleteContact(id: string) {
+    return this.http.delete<string>(`${this.API_URL}contacts/${id}`);
   }
 }
