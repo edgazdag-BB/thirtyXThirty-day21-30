@@ -1,0 +1,16 @@
+.detail-content {
+  padding: 50px;
+  width: 100%;
+  max-width: 220px;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+  align-items: flex-start;
+}
+
+.radio-button {
+  margin: 5px;
+}

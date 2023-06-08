@@ -1,0 +1,9 @@
+<div class="flex">
+  <app-contacts-list class="list-component"
+    [displayedColumns]="displayedColumns"
+    [contacts]="(contacts$ | async) ?? []"
+    (updateContact)="updateContact($event)"
+    (addContact)="addContact()"
+    (deleteContact)="deleteContact($event)">
+  </app-contacts-list>
+</div>
